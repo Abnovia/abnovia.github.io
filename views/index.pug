@@ -1,0 +1,64 @@
+extends layout
+
+block append head
+  script(src='/javascripts/main.js')
+
+block content
+  if error
+    div(class="p-4 mb-4 text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-900/50 rounded-lg")= error
+  if success
+    div(class="p-4 mb-4 text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/50 rounded-lg") Post published successfully!
+  
+  if !showAllPosts
+    div(class="mt-8 max-w-xl mx-auto bg-white dark:bg-zinc-800 shadow rounded-lg p-6")
+      h2(class="text-xl font-semibold text-gray-900 dark:text-white mb-4") Create New Blog Post
+      form(action="/post" method="POST")
+        div(class="space-y-4")
+          div
+            label(for="title" class="block text-sm font-medium text-gray-700 dark:text-white") Title:
+            input#title(type="text" name="title" required class="mt-1 block w-full rounded-md bg-gray-50 dark:bg-zinc-700 border-gray-300 dark:border-zinc-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500")
+          
+          div
+            label(for="content" class="block text-sm font-medium text-gray-700 dark:text-white") Content:
+            textarea#content(name="content" rows="6" required class="mt-1 block w-full rounded-md bg-gray-50 dark:bg-zinc-700 border-gray-300 dark:border-zinc-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500")
+          
+          div
+            label(for="author" class="block text-sm font-medium text-gray-700 dark:text-white") Author:
+            input#author(type="text" name="author" required class="mt-1 block w-full rounded-md bg-gray-50 dark:bg-zinc-700 border-gray-300 dark:border-zinc-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500")
+          
+          div
+            label(for="tags" class="block text-sm font-medium text-gray-700 dark:text-white") Tags (comma-separated):
+            input#tags(type="text" name="tags" class="mt-1 block w-full rounded-md bg-gray-50 dark:bg-zinc-700 border-gray-300 dark:border-zinc-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="tech, programming, web")
+          
+          button(type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500") Publish Post
+    
+    div(class="mt-8 text-center")
+      p(class="text-gray-700 dark:text-white mb-4") View all blog posts
+      a(href="/posts" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500") View All Posts
+
+  else
+    div(class="mt-8 pb-24 bg-white dark:bg-zinc-900")
+      h2(class="text-xl font-semibold mb-6 text-gray-900 dark:text-white") All Blog Posts
+
+      if posts && posts.length
+        div(class="space-y-6")
+          each post in posts
+            article(class="bg-white dark:bg-zinc-800 shadow rounded-lg p-6")
+              h3(class="text-xl font-semibold text-gray-900 dark:text-white mb-2")= post.title
+              div(class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4")
+                span By #{post.author} • 
+                span= new Date(post.date).toISOString().split('T')[0].replace(/-/g, '/')
+              p(class="text-gray-700 dark:text-gray-300 mb-4")= post.content
+              if post.tags && post.tags.length
+                div(class="flex flex-wrap gap-2")
+                  each tag in post.tags
+                    span(class="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-gray-300")= tag
+              div(class="mt-4 flex justify-end space-x-2")
+                button(class="edit-post inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-id=post._id data-title=post.title data-content=post.content data-author=post.author data-tags=post.tags.join(', ')) Edit
+                button(class="delete-post inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" data-id=post._id) Delete
+      else
+        p(class="text-gray-700 dark:text-white") No blog posts yet.
+      
+    div(class="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-800 border-t border-gray-200 dark:border-zinc-700")
+      div(class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-center")
+        a(href="/" class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500") Write New Post
