@@ -1,7 +1,17 @@
 import axios from 'axios';
 
+// Use environment variable or fallback to relative URL for production
+const getBaseURL = () => {
+  // In production (built app), use relative URLs (same domain)
+  if (import.meta.env.PROD) {
+    return window.location.origin;
+  }
+  // In development, use Vite's env variable or default to localhost
+  return import.meta.env.VITE_API_URL || 'http://localhost:7000';
+};
+
 const api = axios.create({
-  baseURL: 'http://localhost:7000',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
