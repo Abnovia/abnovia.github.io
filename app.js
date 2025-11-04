@@ -6,17 +6,26 @@ require('dotenv').config();
 const app = express();
 
 // Enable CORS for all routes
-const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:5173',
-  'http://localhost:5173', // Vite dev server
-  'http://localhost:7000', // Same origin for production
-];
-
+// In production, same-origin requests don't need CORS
+// In development, allow localhost origins
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, etc)
+      // Allow requests with no origin (same-origin, mobile apps, Postman, etc)
       if (!origin) return callback(null, true);
+
+      // Allow all origins in production (since React is served from same domain)
+      if (process.env.NODE_ENV === 'production') {
+        return callback(null, true);
+      }
+
+      // In development, check specific origins
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:7000',
+        process.env.FRONTEND_URL,
+      ].filter(Boolean);
+
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -25,8 +34,8 @@ app.use(
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // Allow credentials
-    exposedHeaders: ['Authorization'], // Expose Authorization header
+    credentials: true,
+    exposedHeaders: ['Authorization'],
   })
 );
 
