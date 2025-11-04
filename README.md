@@ -90,11 +90,28 @@ git push origin main
 | `DATABASE` | MongoDB connection string | Yes |
 | `PORT` | Server port (default: 7000) | No |
 | `NODE_ENV` | Environment mode | No |
+| `ADMIN_USERNAME` | Admin username | Yes |
+| `ADMIN_PASSWORD_HASH` | Bcrypt hash of password | Yes |
+| `JWT_SECRET` | Secret for JWT tokens | Yes |
 | `FRONTEND_URL` | Frontend URL for CORS | No |
 
-## 🔒 Security Note
+See [SECURITY.md](./SECURITY.md) for generating secure credentials.
 
-⚠️ The default admin credentials are hardcoded in `client/src/context/AuthContext.jsx`. **Change these before deploying to production!**
+## 🔒 Security
+
+✅ **Secure JWT Authentication Implemented!**
+
+- Passwords stored as bcrypt hashes (never in code)
+- JWT tokens for authentication (7-day expiration)
+- Environment variables for all credentials
+- No hardcoded credentials
+
+**Setup Required:**
+1. Generate password hash: `node scripts/generate-password.js <your-password>`
+2. Generate JWT secret: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
+3. Add to `.env` file
+
+See [SECURITY.md](./SECURITY.md) for detailed instructions.
 
 ## 📖 API Endpoints
 

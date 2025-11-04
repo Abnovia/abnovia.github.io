@@ -15,6 +15,11 @@ Before deploying, you need:
    - Railway: https://railway.app (recommended for beginners)
    - Render: https://render.com
 
+3. **Admin Credentials Setup** (REQUIRED)
+   - Generate a password hash: `node scripts/generate-password.js <your-password>`
+   - Generate a JWT secret: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
+   - See [SECURITY.md](./SECURITY.md) for detailed instructions
+
 ---
 
 ## Step 1: Set Up MongoDB Atlas
@@ -67,11 +72,14 @@ mongodb+srv://myuser:mypassword@cluster0.mongodb.net/blog?retryWrites=true&w=maj
 4. **Configure Environment Variables**
    - Click on your web service
    - Go to "Variables" tab
-   - Add the following variables:
+   - Add the following variables (see SECURITY.md for generating credentials):
      ```
      DATABASE=mongodb+srv://your-connection-string
      NODE_ENV=production
      PORT=7000
+     ADMIN_USERNAME=admin
+     ADMIN_PASSWORD_HASH=<your-bcrypt-hash>
+     JWT_SECRET=<your-random-secret>
      ```
 
 5. **Deploy**
@@ -137,11 +145,14 @@ The project includes `railway.json` for automatic configuration:
 4. **Add Environment Variables**
    - Scroll down to "Environment Variables"
    - Click "Add Environment Variable"
-   - Add these variables:
+   - Add these variables (see SECURITY.md for generating credentials):
      ```
      DATABASE=mongodb+srv://your-connection-string
      NODE_ENV=production
      PORT=10000
+     ADMIN_USERNAME=admin
+     ADMIN_PASSWORD_HASH=<your-bcrypt-hash>
+     JWT_SECRET=<your-random-secret>
      ```
 
 5. **Deploy**
@@ -220,12 +231,17 @@ To use Blueprint:
 
 ## Environment Variables Reference
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE` | MongoDB connection string | `mongodb+srv://user:pass@cluster.mongodb.net/blog` |
-| `NODE_ENV` | Environment mode | `production` |
-| `PORT` | Server port | `7000` (Railway) or `10000` (Render) |
-| `FRONTEND_URL` | Deployed app URL (optional) | `https://your-app.up.railway.app` |
+| Variable | Description | Example | Required |
+|----------|-------------|---------|----------|
+| `DATABASE` | MongoDB connection string | `mongodb+srv://user:pass@cluster.mongodb.net/blog` | Yes |
+| `NODE_ENV` | Environment mode | `production` | Yes |
+| `PORT` | Server port | `7000` (Railway) or `10000` (Render) | No (auto-set) |
+| `ADMIN_USERNAME` | Admin username for login | `admin` | Yes |
+| `ADMIN_PASSWORD_HASH` | Bcrypt hash of admin password | `$2a$10$...` | Yes |
+| `JWT_SECRET` | Secret key for JWT tokens | 64+ char random string | Yes |
+| `FRONTEND_URL` | Deployed app URL (optional) | `https://your-app.up.railway.app` | No |
+
+**Important:** See [SECURITY.md](./SECURITY.md) for instructions on generating `ADMIN_PASSWORD_HASH` and `JWT_SECRET`.
 
 ---
 
@@ -287,13 +303,16 @@ To run the app locally after deployment setup:
 ## Deployment Checklist
 
 - [ ] MongoDB Atlas cluster created and connection string obtained
-- [ ] `.env.example` reviewed and actual `.env` created locally
+- [ ] Admin password hash generated (`node scripts/generate-password.js`)
+- [ ] JWT secret generated (`node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`)
+- [ ] `.env.example` reviewed and actual `.env` created locally with all credentials
 - [ ] Code committed and pushed to GitHub
 - [ ] Deployment platform account created (Railway or Render)
 - [ ] Web service created and connected to GitHub repo
-- [ ] Environment variables configured on deployment platform
+- [ ] Environment variables configured on deployment platform (including auth credentials)
 - [ ] First deployment completed successfully
-- [ ] Deployed app tested (create/read/update/delete posts)
+- [ ] Admin login tested with new credentials
+- [ ] Deployed app tested (create/read/update/delete posts with authentication)
 - [ ] Logs checked for any errors
 - [ ] (Optional) Custom domain configured
 - [ ] (Optional) GitHub Pages redirects to deployed app
@@ -302,11 +321,12 @@ To run the app locally after deployment setup:
 
 ## Next Steps
 
-- **Security**: Change the hardcoded credentials in `AuthContext.jsx`
-- **Features**: Add user authentication, comments, image uploads
+- **Security**: ✅ JWT authentication already implemented! See [SECURITY.md](./SECURITY.md)
+- **Features**: Add comments, image uploads, multiple users
 - **Monitoring**: Set up error tracking (Sentry, LogRocket)
 - **Analytics**: Add Google Analytics or Plausible
 - **SEO**: Add meta tags and sitemap
+- **Backup**: Set up automated MongoDB backups
 
 ---
 

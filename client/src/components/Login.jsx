@@ -5,23 +5,28 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { login, isAuthenticated, logout } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     if (!username || !password) {
       setError('Please enter both username and password');
+      setIsLoading(false);
       return;
     }
 
     try {
-      login(username, password);
+      await login(username, password);
       setUsername('');
       setPassword('');
     } catch (error) {
-      setError('Login failed. Please try again.');
+      setError(error.message || 'Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,9 +65,10 @@ const Login = () => {
         />
         <button
           type="submit"
-          className="px-3 py-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded"
+          disabled={isLoading}
+          className="px-3 py-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Login
+          {isLoading ? 'Logging in...' : 'Login'}
         </button>
       </form>
       {error && (
