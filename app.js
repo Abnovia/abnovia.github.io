@@ -6,9 +6,23 @@ require('dotenv').config();
 const app = express();
 
 // Enable CORS for all routes
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:5173',
+  'http://localhost:5173', // Vite dev server
+  'http://localhost:7000', // Same origin for production
+];
+
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Vite's default port
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, Postman, etc)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // Allow credentials
@@ -73,6 +87,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Serve React frontend in production
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the React app
+  app.use(express.static(path.join(__dirname, 'client/dist')));
+}
+
 // Add request logging middleware
 app.use((req, res, next) => {
   if (req.method === 'POST' || req.method === 'PUT') {
@@ -83,9 +103,26 @@ app.use((req, res, next) => {
 
 // Import routes
 const indexRouter = require('./routes/index');
+const authRouter = require('./routes/auth');
 
 // Use routes
+app.use('/auth', authRouter);
 app.use('/', indexRouter);
+
+// Serve React app for any other route in production (SPA fallback)
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    // Don't catch API routes
+    if (
+      req.path.startsWith('/api') ||
+      req.path.startsWith('/post') ||
+      req.path.startsWith('/auth')
+    ) {
+      return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+  });
+}
 
 // 404 handler
 app.use((req, res, next) => {

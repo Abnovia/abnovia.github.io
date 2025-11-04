@@ -1,16 +1,11 @@
 const express = require('express');
 const path = require('path');
-const auth = require('http-auth');
 const mongoose = require('mongoose');
 const { check, validationResult } = require('express-validator');
 const BlogPost = require('../models/BlogPost');
+const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
-
-const basic = auth.basic({
-  file: path.join(__dirname, '../users.htpasswd'),
-  realm: 'Admin Area',
-});
 
 /* GET home page - public view */
 router.get('/', (req, res) => {
@@ -126,68 +121,59 @@ router.post(
   }
 );
 
-/* DELETE blog post */
-router.delete(
-  '/post/:id',
-  basic.check(async (req, res) => {
-    try {
-      console.log('Delete request received:', {
-        id: req.params.id,
-        auth: req.headers.authorization,
-        method: req.method,
-        url: req.url,
-      });
+/* DELETE blog post - Protected with JWT */
+router.delete('/post/:id', verifyToken, async (req, res) => {
+  try {
+    console.log('Delete request received:', {
+      id: req.params.id,
+      user: req.user.username,
+      method: req.method,
+      url: req.url,
+    });
 
-      // Verify authentication header
-      if (!req.headers.authorization) {
-        console.log('Missing authorization header');
-        return res.status(401).json({ error: 'Authentication required' });
-      }
-
-      // Check if post exists before trying to delete
-      const post = await BlogPost.findById(req.params.id);
-      if (!post) {
-        console.log('Post not found:', req.params.id);
-        return res.status(404).json({ error: 'Post not found' });
-      }
-
-      // Delete the post
-      await post.deleteOne();
-      console.log('Post deleted successfully:', post._id);
-
-      res.json({
-        message: 'Post deleted successfully',
-        postId: post._id,
-      });
-    } catch (error) {
-      console.error('Error deleting post:', {
-        message: error.message,
-        stack: error.stack,
-        postId: req.params.id,
-        headers: req.headers,
-      });
-
-      if (error.name === 'CastError') {
-        return res.status(400).json({ error: 'Invalid post ID format' });
-      }
-
-      res.status(500).json({
-        error: 'Failed to delete post',
-        details: error.message,
-      });
+    // Check if post exists before trying to delete
+    const post = await BlogPost.findById(req.params.id);
+    if (!post) {
+      console.log('Post not found:', req.params.id);
+      return res.status(404).json({ error: 'Post not found' });
     }
-  })
-);
 
-/* PUT update blog post */
+    // Delete the post
+    await post.deleteOne();
+    console.log('Post deleted successfully:', post._id);
+
+    res.json({
+      message: 'Post deleted successfully',
+      postId: post._id,
+    });
+  } catch (error) {
+    console.error('Error deleting post:', {
+      message: error.message,
+      stack: error.stack,
+      postId: req.params.id,
+    });
+
+    if (error.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid post ID format' });
+    }
+
+    res.status(500).json({
+      error: 'Failed to delete post',
+      details: error.message,
+    });
+  }
+});
+
+/* PUT update blog post - Protected with JWT */
 router.put(
   '/post/:id',
+  verifyToken,
   [
     check('title').trim().isLength({ min: 1 }).escape(),
     check('content').trim().isLength({ min: 1 }),
     check('author').trim().isLength({ min: 1 }).escape(),
   ],
-  basic.check(async (req, res) => {
+  async (req, res) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -220,7 +206,7 @@ router.put(
       console.error('Error updating post:', error);
       res.status(500).json({ error: 'Failed to update post' });
     }
-  })
+  }
 );
 
 module.exports = router;

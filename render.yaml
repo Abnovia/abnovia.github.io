@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: abnovia-blog
+    env: node
+    buildCommand: npm install && npm run install-client && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE
+        sync: false
+      - key: PORT
+        value: 10000

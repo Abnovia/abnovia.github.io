@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 const Posts = () => {
   const [posts, setPosts] = useState([]);
   const [editingPost, setEditingPost] = useState(null);
-  const { isAuthenticated, credentials } = useAuth();
+  const { isAuthenticated, token } = useAuth();
 
   useEffect(() => {
     fetchPosts();
@@ -38,7 +38,7 @@ const Posts = () => {
     }
 
     try {
-      await updatePost(editingPost._id, formData, credentials);
+      await updatePost(editingPost._id, formData, token);
       setEditingPost(null);
       fetchPosts();
     } catch (error) {
@@ -53,9 +53,9 @@ const Posts = () => {
       return;
     }
 
-    if (!credentials) {
+    if (!token) {
       alert(
-        'No authentication credentials found. Please try logging in again.'
+        'No authentication token found. Please try logging in again.'
       );
       return;
     }
@@ -67,10 +67,10 @@ const Posts = () => {
     try {
       console.log('Attempting to delete post:', {
         id,
-        hasCredentials: !!credentials,
+        hasToken: !!token,
       });
 
-      const response = await deletePost(id, credentials);
+      const response = await deletePost(id, token);
       console.log('Delete response:', response);
 
       if (response.status === 200) {

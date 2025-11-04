@@ -1,7 +1,17 @@
 import axios from 'axios';
 
+// Use environment variable or fallback to relative URL for production
+const getBaseURL = () => {
+  // In production (built app), use relative URLs (same domain)
+  if (import.meta.env.PROD) {
+    return window.location.origin;
+  }
+  // In development, use Vite's env variable or default to localhost
+  return import.meta.env.VITE_API_URL || 'http://localhost:7000';
+};
+
 const api = axios.create({
-  baseURL: 'http://localhost:7000',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -50,27 +60,32 @@ api.interceptors.request.use(
 
 export const getPosts = () => api.get('/posts');
 export const createPost = (post) => api.post('/post', post);
-export const updatePost = (id, post, credentials) =>
-  api.put(`/post/${id}`, post, {
+
+export const updatePost = (id, post, token) => {
+  if (!token) {
+    return Promise.reject(new Error('Authentication required'));
+  }
+
+  return api.put(`/post/${id}`, post, {
     headers: {
-      Authorization: `Basic ${credentials}`,
+      Authorization: `Bearer ${token}`,
     },
   });
+};
 
-export const deletePost = (id, credentials) => {
-  if (!credentials) {
-    return Promise.reject(new Error('No credentials provided'));
+export const deletePost = (id, token) => {
+  if (!token) {
+    return Promise.reject(new Error('Authentication required'));
   }
 
   console.log('Making delete request:', {
     id,
-    hasCredentials: !!credentials,
-    authHeader: `Basic ${credentials}`,
+    hasToken: !!token,
   });
 
   return api.delete(`/post/${id}`, {
     headers: {
-      Authorization: `Basic ${credentials}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 };
