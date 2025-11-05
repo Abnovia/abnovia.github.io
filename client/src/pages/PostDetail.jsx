@@ -87,11 +87,7 @@ const PostDetail = () => {
   };
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    return new Date(date).toISOString().split('T')[0];
   };
 
   if (loading) {
