@@ -58,14 +58,14 @@ api.interceptors.request.use(
   }
 );
 
-export const getPosts = () => api.get('/posts');
+export const getPosts = () => api.get('/api/posts');
 
 export const createPost = (post, token) => {
   if (!token) {
     return Promise.reject(new Error('Authentication required'));
   }
 
-  return api.post('/post', post, {
+  return api.post('/api/post', post, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -77,7 +77,7 @@ export const updatePost = (id, post, token) => {
     return Promise.reject(new Error('Authentication required'));
   }
 
-  return api.put(`/post/${id}`, post, {
+  return api.put(`/api/post/${id}`, post, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -94,7 +94,7 @@ export const deletePost = (id, token) => {
     hasToken: !!token,
   });
 
-  return api.delete(`/post/${id}`, {
+  return api.delete(`/api/post/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
