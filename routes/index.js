@@ -7,15 +7,7 @@ const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-/* GET home page - public view */
-router.get('/', (req, res) => {
-  res.render('index', {
-    title: 'My Blog',
-    showAllPosts: false,
-  });
-});
-
-/* GET all posts page */
+/* GET all posts - API endpoint */
 router.get('/posts', async (req, res) => {
   try {
     const posts = await BlogPost.find().sort({ date: -1 });
@@ -24,11 +16,6 @@ router.get('/posts', async (req, res) => {
     console.error('Error retrieving posts:', error);
     res.status(500).json({ error: 'Failed to retrieve posts' });
   }
-});
-
-/* GET about page */
-router.get('/about', (req, res) => {
-  res.render('about', { title: 'About' });
 });
 
 /* POST new blog post - Protected with JWT */

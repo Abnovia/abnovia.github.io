@@ -116,17 +116,13 @@ const authRouter = require('./routes/auth');
 
 // Use routes
 app.use('/auth', authRouter);
-app.use('/', indexRouter);
+app.use('/api', indexRouter);
 
 // Serve React app for any other route in production (SPA fallback)
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
     // Don't catch API routes
-    if (
-      req.path.startsWith('/api') ||
-      req.path.startsWith('/post') ||
-      req.path.startsWith('/auth')
-    ) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
       return res.status(404).json({ error: 'API endpoint not found' });
     }
     res.sendFile(path.join(__dirname, 'client/dist/index.html'));
