@@ -59,7 +59,18 @@ api.interceptors.request.use(
 );
 
 export const getPosts = () => api.get('/posts');
-export const createPost = (post) => api.post('/post', post);
+
+export const createPost = (post, token) => {
+  if (!token) {
+    return Promise.reject(new Error('Authentication required'));
+  }
+
+  return api.post('/post', post, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 
 export const updatePost = (id, post, token) => {
   if (!token) {
