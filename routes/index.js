@@ -31,9 +31,10 @@ router.get('/about', (req, res) => {
   res.render('about', { title: 'About' });
 });
 
-/* POST new blog post */
+/* POST new blog post - Protected with JWT */
 router.post(
   '/post',
+  verifyToken,
   [
     check('title').trim().isLength({ min: 1 }).escape(),
     check('content').trim().isLength({ min: 1 }),

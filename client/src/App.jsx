@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Posts from './pages/Posts';
+import PostDetail from './pages/PostDetail';
 import Login from './components/Login';
 
 const App = () => {
@@ -102,6 +103,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/posts" element={<Posts />} />
+              <Route path="/posts/:id" element={<PostDetail />} />
             </Routes>
           </div>
         </main>

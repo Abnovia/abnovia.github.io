@@ -1,20 +1,36 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PostCard = ({ post, onEdit, onDelete, showActions }) => {
+  const navigate = useNavigate();
+
   const formatDate = (date) => {
     return new Date(date).toISOString().split('T')[0].replace(/-/g, '/');
   };
 
+  const handleCardClick = (e) => {
+    // Don't navigate if clicking on action buttons
+    if (e.target.closest('button')) {
+      return;
+    }
+    navigate(`/posts/${post._id}`);
+  };
+
   return (
-    <article className="bg-white dark:bg-zinc-800 shadow rounded-lg p-6">
-      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+    <article
+      onClick={handleCardClick}
+      className="bg-white dark:bg-zinc-800 shadow rounded-lg p-6 cursor-pointer hover:shadow-lg transition-shadow duration-200"
+    >
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
         {post.title}
       </h3>
       <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
         <span>By {post.author} • </span>
         <span>{formatDate(post.date)}</span>
       </div>
-      <p className="text-gray-700 dark:text-gray-300 mb-4">{post.content}</p>
+      <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
+        {post.content}
+      </p>
       {post.tags && post.tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {post.tags.map((tag, index) => (
