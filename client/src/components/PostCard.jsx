@@ -5,7 +5,7 @@ const PostCard = ({ post, onEdit, onDelete, showActions }) => {
   const navigate = useNavigate();
 
   const formatDate = (date) => {
-    return new Date(date).toISOString().split('T')[0].replace(/-/g, '/');
+    return new Date(date).toISOString().split('T')[0];
   };
 
   const handleCardClick = (e) => {
