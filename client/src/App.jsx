@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Posts from './pages/Posts';
 import Login from './components/Login';
 
 const App = () => {
+  // Initialize theme on mount
+  useEffect(() => {
+    // Default to dark mode if no preference is set
+    if (!localStorage.theme) {
+      document.documentElement.classList.add('dark');
+      localStorage.theme = 'dark';
+    } else if (localStorage.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');
     localStorage.theme = document.documentElement.classList.contains('dark')
