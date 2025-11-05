@@ -38,12 +38,27 @@ const Posts = () => {
     }
 
     try {
-      await updatePost(editingPost._id, formData, token);
+      console.log('Updating post with data:', formData);
+      const response = await updatePost(editingPost._id, formData, token);
+      console.log('Update response:', response);
       setEditingPost(null);
-      fetchPosts();
+      await fetchPosts();
     } catch (error) {
       console.error('Error updating post:', error);
-      alert('Failed to update post. Please try again.');
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+
+      if (error.response?.status === 401) {
+        alert('Your session has expired. Please login again.');
+      } else {
+        alert(
+          error.response?.data?.error ||
+            'Failed to update post. Please try again.'
+        );
+      }
     }
   };
 

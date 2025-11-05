@@ -11,10 +11,10 @@ const PostForm = ({ post, onSubmit, onCancel }) => {
   useEffect(() => {
     if (post) {
       setFormData({
-        title: post.title,
-        content: post.content,
-        author: post.author,
-        tags: post.tags.join(', '),
+        title: post.title || '',
+        content: post.content || '',
+        author: post.author || '',
+        tags: Array.isArray(post.tags) ? post.tags.join(', ') : '',
       });
     }
   }, [post]);
