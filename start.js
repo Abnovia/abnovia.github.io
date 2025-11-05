@@ -19,9 +19,6 @@ mongoose.connection
     console.log('Mongoose connection disconnected');
   });
 
-// Load models
-require('./models/Registration');
-
 // Start Express app
 const app = require('./app');
 const port = process.env.PORT || 7000;
