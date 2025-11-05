@@ -36,7 +36,7 @@ const App = () => {
                 to="/"
                 className="text-xl font-bold text-gray-900 dark:text-white"
               >
-                My Blog
+                Abnovia Blog
               </Link>
               <div className="flex items-center space-x-6">
                 <ul className="flex space-x-4">
@@ -111,7 +111,7 @@ const App = () => {
         <footer className="bg-white dark:bg-zinc-800 w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-gray-600 dark:text-gray-300">
             <p>
-              &copy; {new Date().getFullYear()} My Blog. All rights reserved.
+              &copy; {new Date().getFullYear()} Abnovia Blog. All rights reserved.
             </p>
           </div>
         </footer>
