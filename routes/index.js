@@ -170,9 +170,15 @@ router.put(
           .json({ error: 'Please check your input and try again.' });
       }
 
-      const tags = req.body.tags
-        ? req.body.tags.split(',').map((tag) => tag.trim())
-        : [];
+      // Handle tags as either array or comma-separated string
+      let tags = [];
+      if (req.body.tags) {
+        if (Array.isArray(req.body.tags)) {
+          tags = req.body.tags;
+        } else if (typeof req.body.tags === 'string') {
+          tags = req.body.tags.split(',').map((tag) => tag.trim());
+        }
+      }
 
       const post = await BlogPost.findByIdAndUpdate(
         req.params.id,
