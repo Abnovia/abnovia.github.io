@@ -122,16 +122,16 @@ const Posts = () => {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
+      <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
         All Blog Posts
       </h2>
 
-      <div className="space-y-6 mb-24">
+      <div className="space-y-4 mb-20">
         {posts.length > 0 ? (
           posts.map((post) => (
             <div key={post._id}>
               {editingPost && editingPost._id === post._id ? (
-                <div className="bg-white dark:bg-zinc-800 shadow rounded-lg p-6">
+                <div className="bg-white dark:bg-zinc-800 shadow rounded-lg p-4">
                   <PostForm
                     post={editingPost}
                     onSubmit={handleUpdate}
@@ -149,7 +149,7 @@ const Posts = () => {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-700 dark:text-gray-300">
+          <p className="text-center text-sm text-gray-700 dark:text-gray-300">
             No blog posts yet.
           </p>
         )}
@@ -157,11 +157,11 @@ const Posts = () => {
 
       {isAuthenticated && (
         <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-800 border-t border-gray-200 dark:border-zinc-700">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div className="flex justify-center">
               <Link
                 to="/"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Write New Post
               </Link>
